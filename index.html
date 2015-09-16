@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>瀑布流</title>
+</head>
+<body>
+<style type="text/css">
+.wf-main{
+    position: relative;
+    margin: 0 auto;
+ 
+    overflow: hidden;
+}
+.wf-main .wf-cld{
+    position: absolute;
+    margin-bottom: 10px;
+    padding:5px 8px;
+    width: 214px;
+    left: -9999px;
+    top: -9999px;
+    line-height:18px;
+    border: 1px solid #999;
+    border-radius: 4px;
+    background-color: #ccc;
+    overflow: hidden;
+    transition: all 1.5s;
+    -moz-transition:all 1.5s; /* Firefox 4 */
+    -webkit-transition:all 1.5s; /* Safari and Chrome */
+    -o-transition:all 1.5s; /* Opera */
+
+}
+.wf-cld .inner{
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    margin-bottom: 5px;
+    width: 73px;
+    overflow: hidden;
+    border: 1px solid #f00;
+    border-radius: 3px;
+}
+.wf-cld .title{
+    margin: 0 0 5px;
+    padding: 5px;
+    width: 63px;
+    color: #f00;
+    font-size: 14px;
+}
+img{width: 100%;}
+</style>
+<div class="wf-main" id="wf-main">
+    <div class="wf-cld"><img src="images/P_000.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_001.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_002.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_003.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_004.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_005.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_006.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_007.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_008.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_009.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_010.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_011.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_012.jpg" alt="" /></div>
+    <!-- <div class="wf-cld" id="wf-inner">
+        <h2 class="inner title">21、内部瀑布流</h2>
+        <div class="inner"><img src="images/P_000.jpg" alt="" /></div>
+        <div class="inner"><img src="images/P_001.jpg" alt="" /></div>
+        <div class="inner"><img src="images/P_002.jpg" alt="" /></div>
+        <div class="inner"><img src="images/P_003.jpg" alt="" /></div>
+        <div class="inner"><img src="images/P_004.jpg" alt="" /></div>
+        <div class="inner"><img src="images/P_005.jpg" alt="" /></div>
+        <div class="inner"><img src="images/P_006.jpg" alt="" /></div>
+        <div class="inner"><img src="images/P_007.jpg" alt="" /></div>
+        <div class="inner"><img src="images/P_008.jpg" alt="" /></div>
+    </div> -->
+    <div class="wf-cld"><img src="images/P_000.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_001.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_002.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_003.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_004.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_005.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_006.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_007.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_008.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_009.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_010.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_011.jpg" alt="" /></div>
+    <div class="wf-cld"><img src="images/P_012.jpg" alt="" /></div>
+</div>
+<script type="text/javascript">
+window.onload = function(){
+    function Waterfall(param){
+        this.id = typeof param.container == 'string' ? document.getElementById(param.container) : param.container;
+        this.colWidth = param.colWidth;
+        //this.colCount = param.colCount || 4;
+        /*var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth; 
+        this.colCount = parseInt(w / param.colWidth);*/
+        this.cls = param.cls && param.cls != '' ? param.cls : 'wf-cld';
+        this.init();
+    }
+    Waterfall.prototype = {
+        getByClass:function(cls,p){
+            /*拿到className为cls的HtmlCollection*/
+            var arr = [],reg = new RegExp("(^|\\s+)" + cls + "(\\s+|$)","g");
+            var nodes = p.getElementsByTagName("*"),len = nodes.length;
+            for(var i = 0; i < len; i++){
+                if(reg.test(nodes[i].className)){
+                    arr.push(nodes[i]);
+                    reg.lastIndex = 0;
+                }
+            }
+            return arr;
+        },
+        maxArr:function(arr){
+            var len = arr.length,temp = arr[0];
+            for(var ii= 1; ii < len; ii++){
+                if(temp < arr[ii]){
+                    temp = arr[ii];
+                }
+            }
+            return temp;
+        },
+        getMar:function(node){
+            var dis = 0;
+            if(node.currentStyle){
+                dis = parseInt(node.currentStyle.marginBottom);
+            }else if(document.defaultView){
+                dis = parseInt(document.defaultView.getComputedStyle(node,null).marginBottom);
+            }
+            return dis;
+        },
+        getMinCol:function(arr){
+            var ca = arr,cl = ca.length,temp = ca[0],minc = 0;
+            for(var ci = 0; ci < cl; ci++){
+                if(temp > ca[ci]){
+                    temp = ca[ci];
+                    minc = ci;
+                }
+            }
+            return minc;
+        },
+        init:function(){
+            var _this = this;
+            var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth; 
+            _this.colCount = parseInt(w / _this.colWidth);
+            var col = [],//列高
+                iArr = [];//索引
+            var nodes = _this.getByClass(_this.cls,_this.id),len = nodes.length;
+            for(var i = 0; i < _this.colCount; i++){
+                col[i] = 0;
+            }
+            for(var i = 0; i < len; i++){
+                nodes[i].h = nodes[i].offsetHeight + _this.getMar(nodes[i]);
+                iArr[i] = i;
+            }
+             
+            for(var i = 0; i < len; i++){
+                var ming = _this.getMinCol(col);
+                nodes[i].style.left = ming * _this.colWidth + "px";
+                nodes[i].style.top = col[ming] + "px";
+                col[ming] += nodes[i].h;
+            }
+             
+            _this.id.style.height = _this.maxArr(col) + "px";
+        }
+    };
+
+    var waterfall = new Waterfall({
+        "container":"wf-main",
+        "colWidth":244,
+        //"colCount":5
+    });
+    /*var waterfall_inner = new Waterfall({
+        "container":"wf-inner",
+        "colWidth":77,
+        //"colCount":3,
+        "cls":"inner"
+    });*/
+    window.onresize = function(){
+        waterfall.init();
+        /*waterfall_inner.init();*/
+    }
+    /*以上的原理就是，先把html的node全部放在一个数组里，长度为len，然后根据cloCount创建一个cloCount长度的数组col,初始化全部为0，遍历node(len次),每次找到col中高度最短的，找到最短的索引min，然后把node里面当前的元素放在min处，也就是给该元素赋top,left值。最后再找出col高度最高的，把外面的容器的height修改成这个最高的高度。*/
+}
+
+</script>
+</body>
+</html>
